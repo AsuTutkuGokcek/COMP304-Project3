@@ -1,5 +1,10 @@
 #include "fat.h"
 #include "fat_file.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include <string.h>
+#include <assert.h>
 
 // Little helper to show debug messages. Set 1 to 0 to silence.
 #define DEBUG 1

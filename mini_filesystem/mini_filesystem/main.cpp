@@ -1,5 +1,9 @@
 #include "fat.h"
 #include "fat_file.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include <string.h>
 
 const char * fox = "The quick brown fox jumps over the lazy dog.\n";
 

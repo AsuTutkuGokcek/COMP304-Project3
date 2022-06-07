@@ -20,15 +20,15 @@
  * @return              written byte count
  */
 int mini_fat_write_in_block(FAT_FILESYSTEM *fs, const int block_id, const int block_offset, const int size, const void * buffer) {
-	assert(block_offset >= 0);
-	assert(block_offset < fs->block_size);
-	assert(size + block_offset <= fs->block_size);
+	//assert(block_offset >= 0);
+	//assert(block_offset < fs->block_size);
+	//assert(size + block_offset <= fs->block_size);
 
 	int written = 0;
 
 	// TODO: write in the real file.
 	FILE *fp;
-	fp = fopen (fs->filename, "rb+");
+	fp = fopen (fs->filename, "wb");
 	fseek(fp, fs->block_size*fs->block_count+block_offset, SEEK_SET);
 	written = fwrite(buffer, 1, size, fp);
 	fclose(fp);

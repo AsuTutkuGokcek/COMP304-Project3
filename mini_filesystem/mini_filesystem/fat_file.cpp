@@ -194,7 +194,18 @@ int mini_file_write(FAT_FILESYSTEM *fs, FAT_OPEN_FILE * open_file, const int siz
 
 	// TODO: write to file.
 
-	return written_bytes;
+	FAT_FILE *file = open_file->file;
+	int POS = open_file->position;
+
+	int block_index = position_to_block_index(fs, POS);
+	int byte_index = position_to_byte_index(fs, POS);
+
+
+	fs->block_size += mini_fat_write_in_block(fs, block_index, byte_index, size, buffer);
+
+	return size;
+
+	//return written_bytes;
 }
 
 /**
@@ -229,7 +240,7 @@ bool mini_file_seek(FAT_FILESYSTEM *fs, FAT_OPEN_FILE * open_file, const int off
 		newPos = open_file->position + offset;
 	}
 
-	if (newPos >= size){
+	if (newPos > size || newPos < 0){
 		return false;
 	}
 

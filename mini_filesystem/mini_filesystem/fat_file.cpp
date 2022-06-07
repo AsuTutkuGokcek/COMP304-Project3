@@ -190,6 +190,9 @@ bool mini_file_close(FAT_FILESYSTEM *fs, const FAT_OPEN_FILE * open_file)
  */
 int mini_file_write(FAT_FILESYSTEM *fs, FAT_OPEN_FILE * open_file, const int size, const void * buffer)
 {
+
+	
+
 	int written_bytes = 0;
 
 	// TODO: write to file.
@@ -200,12 +203,26 @@ int mini_file_write(FAT_FILESYSTEM *fs, FAT_OPEN_FILE * open_file, const int siz
 	int block_index = position_to_block_index(fs, POS);
 	int byte_index = position_to_byte_index(fs, POS);
 
+	if(size + block_index <= fs->block_size){
 
-	fs->block_size += mini_fat_write_in_block(fs, block_index, byte_index, size, buffer);
+		file->size += mini_fat_write_in_block(fs, block_index, byte_index, size, buffer);
+
+
+	}
+	else{
+
+		file->size += mini_fat_write_in_block(fs, block_index, byte_index, fs->block_size - block_index, buffer);
+	
+		mini_file_write(fs, open_file , size - (fs->block_size - block_index), buffer + (fs->block_size - block_index));
+
+		
+	}
+
 
 	return size;
 
-	//return written_bytes;
+
+
 }
 
 /**
@@ -213,12 +230,40 @@ int mini_file_write(FAT_FILESYSTEM *fs, FAT_OPEN_FILE * open_file, const int siz
  * @return           number of bytes read.
  */
 int mini_file_read(FAT_FILESYSTEM *fs, FAT_OPEN_FILE * open_file, const int size, void * buffer)
-{
+{	
+
+	
+
 	int read_bytes = 0;
 
 	// TODO: read file.
+	 
+
+	FAT_FILE *file = open_file->file;
+	int POS = open_file->position;
+	int block_index = position_to_block_index(fs, POS);
+	int byte_index = position_to_byte_index(fs, POS);
+
+	if(size + block_index <= fs->block_size){
+
+		read_bytes = mini_fat_read_in_block(fs, block_index, byte_index, size, buffer);
+
+
+	}
+	else{
+
+		read_bytes = mini_fat_read_in_block(fs, block_index, byte_index, fs->block_size - block_index, buffer);
+
+		
+
+		read_bytes += mini_file_read(fs, open_file , size - (fs->block_size - block_index), buffer + (fs->block_size - block_index));
+
+		
+		
+	}
 
 	return read_bytes;
+	
 }
 
 
@@ -245,6 +290,7 @@ bool mini_file_seek(FAT_FILESYSTEM *fs, FAT_OPEN_FILE * open_file, const int off
 	}
 
 	open_file->position = newPos;
+	
 	return true;
 
 }

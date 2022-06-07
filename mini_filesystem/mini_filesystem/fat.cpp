@@ -54,6 +54,12 @@ int mini_fat_read_in_block(FAT_FILESYSTEM *fs, const int block_id, const int blo
 
 	// TODO: read from the real file.
 
+	FILE *fp;
+	fp = fopen (fs->filename, "wb");
+	fseek(fp, fs->block_size*fs->block_count+block_offset, SEEK_SET);
+	read = fread(buffer, 1, size, fp);
+	fclose(fp);
+
 	return read;
 }
 

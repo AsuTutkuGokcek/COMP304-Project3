@@ -115,6 +115,14 @@ FAT_FILESYSTEM * mini_fat_create(const char * filename, const int block_size, co
 	FAT_FILESYSTEM * fat = mini_fat_create_internal(filename, block_size, block_count);
 
 	// TODO: create the corresponding virtual disk file with appropriate size.
+	
+	FILE *fp;
+	fp = fopen (filename, "wb");
+	fseek(fp, block_size * block_count , SEEK_SET);
+    fputc('\0', fp);
+    fclose(fp);
+
+
 	return fat;
 }
 

@@ -157,6 +157,27 @@ bool mini_fat_save(const FAT_FILESYSTEM *fat) {
 	}
 	// TODO: save all metadata (filesystem metadata, file metadata).
 
+	fwrite(&fat->block_count, sizeof(fat->block_count), 1, fat_fd);
+	for(int i=0; i<fat->block_map.size(); i++){
+		fwrite(&fat->block_map[i], sizeof(fat->block_map[i]), 1, fat_fd);
+	}
+	fwrite(&fat->block_size, sizeof(fat->block_size), 1, fat_fd);
+	fwrite(&fat->filename, sizeof(fat->filename), 1, fat_fd);
+
+	for(int i=0; i<fat->files.size(); i++){
+
+		for(int j=0; j<fat->files[j]->block_ids.size(); j++){
+			fwrite(&fat->files[i]->block_ids, sizeof(fat->files[i]->block_ids), 1, fat_fd);
+			fwrite(&fat->files[i]->metadata_block_id, sizeof(fat->files[i]->metadata_block_id), 1, fat_fd);
+			fwrite(&fat->files[i]->name, sizeof(fat->files[i]->name), 1, fat_fd);
+			fwrite(&fat->files[i]->open_handles, sizeof(fat->files[i]->open_handles), 1, fat_fd);
+			fwrite(&fat->files[i]->size, sizeof(fat->files[i]->size), 1, fat_fd);
+		}
+		fwrite(&fat->files[i]->metadata_block_id, sizeof(fat->files[i]->metadata_block_id), 1, fat_fd);
+		fwrite(&fat->files[i]->name, sizeof(fat->files[i]->name), 1, fat_fd);
+		fwrite(&fat->files[i]->size, sizeof(fat->files[i]->size), 1, fat_fd);
+	}
+
 	return true;
 }
 

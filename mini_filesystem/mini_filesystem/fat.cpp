@@ -27,6 +27,11 @@ int mini_fat_write_in_block(FAT_FILESYSTEM *fs, const int block_id, const int bl
 	int written = 0;
 
 	// TODO: write in the real file.
+	FILE *fp;
+	fp = fopen (fs->filename, "wb");
+	fseek(fp, fs->block_size*fs->block_count+block_offset, SEEK_SET);
+	written = fwrite(buffer, 1, size, fp);
+	fclose(fp);
 
 	return written;
 }
@@ -121,7 +126,6 @@ FAT_FILESYSTEM * mini_fat_create(const char * filename, const int block_size, co
 	fseek(fp, block_size * block_count , SEEK_SET);
     fputc('\0', fp);
     fclose(fp);
-
 
 	return fat;
 }

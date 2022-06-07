@@ -127,18 +127,41 @@ int mini_file_size(FAT_FILESYSTEM *fs, const char *filename) {
 FAT_OPEN_FILE * mini_file_open(FAT_FILESYSTEM *fs, const char *filename, const bool is_write)
 {
 	FAT_FILE * fd = mini_file_find(fs, filename);
+	
+
 	if (!fd) {
 		// TODO: check if it's write mode, and if so create it. Otherwise return NULL.
-		return NULL;
+
+		if(is_write){
+			fd = mini_file_create_file(fs, filename);
+			if(fd==NULL){
+				fprintf(stderr,"ERROR");
+				return NULL;
+			}
+		}else{
+			fprintf(stderr,"ERROR");
+			return NULL;
+		}
+	
 	}
 
 	if (is_write) {
 		// TODO: check if other write handles are open.
-		return NULL;
+		for(int i = 0; i < fd->open_handles.size(); i++){
+		if(fd->open_handles.at(i)->is_write==true){
+			fprintf(stderr,"ERROR");
+
+			return NULL;
+		}
+	}
 	}
 
 	FAT_OPEN_FILE * open_file = new FAT_OPEN_FILE;
 	// TODO: assign open_file fields.
+
+	open_file->position=0;
+	open_file->file=fd;
+	open_file->is_write=is_write;
 
 	// Add to list of open handles for fd:
 	fd->open_handles.push_back(open_file);
@@ -198,7 +221,21 @@ bool mini_file_seek(FAT_FILESYSTEM *fs, FAT_OPEN_FILE * open_file, const int off
 {
 	// TODO: seek and return true.
 
-	return false;
+	int newPos = 0;
+	int size = open_file->file->size;
+	if (from_start){
+		newPos = offset;
+	}else{
+		newPos = open_file->position + offset;
+	}
+
+	if (newPos >= size){
+		return false;
+	}
+
+	open_file->position = newPos;
+	return true;
+
 }
 
 /**
@@ -211,5 +248,23 @@ bool mini_file_delete(FAT_FILESYSTEM *fs, const char *filename)
 {
 	// TODO: delete file after checks.
 
-	return false;
+	t_FAT_FILE *file = mini_file_find(fs, filename);
+
+
+	if (file == NULL)
+	{
+		printf("No file found with name %s", filename);
+		return false;
+	}
+	for(int i=0; i<file->open_handles.size(); i++){
+	if (file->open_handles[i]->is_write==true)
+	{
+		printf("The file named %s is open. Therefore, it can't be deleted", filename);
+		return false;
+	}
+	}
+
+	vector_delete_value(fs->files, file);
+
+	return true;
 }

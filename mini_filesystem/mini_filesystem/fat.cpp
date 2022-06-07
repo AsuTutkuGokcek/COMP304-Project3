@@ -28,7 +28,7 @@ int mini_fat_write_in_block(FAT_FILESYSTEM *fs, const int block_id, const int bl
 
 	// TODO: write in the real file.
 	FILE *fp;
-	fp = fopen (fs->filename, "wb");
+	fp = fopen (fs->filename, "rb+");
 	fseek(fp, fs->block_size*fs->block_count+block_offset, SEEK_SET);
 	written = fwrite(buffer, 1, size, fp);
 	fclose(fp);
@@ -55,7 +55,7 @@ int mini_fat_read_in_block(FAT_FILESYSTEM *fs, const int block_id, const int blo
 	// TODO: read from the real file.
 
 	FILE *fp;
-	fp = fopen (fs->filename, "wb");
+	fp = fopen (fs->filename, "rb");
 	fseek(fp, fs->block_size*fs->block_count+block_offset, SEEK_SET);
 	read = fread(buffer, 1, size, fp);
 	fclose(fp);
@@ -71,7 +71,7 @@ int mini_fat_read_in_block(FAT_FILESYSTEM *fs, const int block_id, const int blo
 int mini_fat_find_empty_block(const FAT_FILESYSTEM *fat) {
 	// TODO: find an empty block in fat and return its index.
 
-	for(int i = 0; i < fat->block_map.size(); i++){
+	for(int i = 0; i < fat->block_count; i++){
 		if(fat->block_map.at(i)==EMPTY_BLOCK){
 			return i;
 		}
@@ -136,9 +136,7 @@ FAT_FILESYSTEM * mini_fat_create(const char * filename, const int block_size, co
 	FILE *fp;
 	fp = fopen (filename, "wb");
 	fseek(fp, block_size * block_count , SEEK_SET);
-    fputc('\0', fp);
     fclose(fp);
-
 	return fat;
 }
 

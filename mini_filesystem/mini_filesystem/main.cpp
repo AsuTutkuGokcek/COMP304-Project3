@@ -29,7 +29,6 @@ inline void score(const bool cond, int points = 1) {
 
 void test_small_filesystem(FAT_FILESYSTEM * fs) {
 	FAT_OPEN_FILE *fd1, *fd2, *fd3;
-	printf("Openning 1st file in write mode should work.\n");
 	fd1 = mini_file_open(fs, "file1.txt", true);
 	score(fd1 != NULL);
 

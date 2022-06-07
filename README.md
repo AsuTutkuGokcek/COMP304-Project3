@@ -15,3 +15,5 @@ For mini_file_open, we did accordingly: if !fd, and if is_write==true, call mini
 For seek, we used from_start in the if case; if it is true, we set newPos = offset, if not we did newPos = open_file->position + offset. If new position is bigger than size, we returned false. Lastly, we did open_file->position = newPos.
 For delete, we used a for loop to check is_write in all open_handles. If it is true, we printed "it can't be deleted". Lastly, we called vector_delete_value(fs->files, file) function.
 For save function, we used fwrite for all things the fat struct had. For block_map, we used a for loop to save every single element and save them seperately. For files, same idea as block_map. We used a for loop for saving all files. We added some more loops for every part that had smaller parts inside.
+For write function, we if the size is smaller then byte count left, we just write. Else, we write at the end of block and then recursively call the function.
+Read is simmilar to write instead it reads.

@@ -71,6 +71,12 @@ int mini_fat_read_in_block(FAT_FILESYSTEM *fs, const int block_id, const int blo
 int mini_fat_find_empty_block(const FAT_FILESYSTEM *fat) {
 	// TODO: find an empty block in fat and return its index.
 
+	for(int i = 0; i < fat->block_map.size(); i++){
+		if(fat->block_map.at(i)==EMPTY_BLOCK){
+			return i;
+		}
+	}
+
 	return -1;
 }
 
